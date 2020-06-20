@@ -65,6 +65,10 @@ class ChewieState extends State<Chewie> {
       Navigator.of(context, rootNavigator: true).pop();
       _isFullScreen = false;
     }
+
+    if (widget.controller.isVideoPlayerControllerInitialized) {
+      setState(() {});
+    }
   }
 
   @override
@@ -283,12 +287,17 @@ class ChewieController extends ChangeNotifier {
 
   bool get isPlaying => videoPlayerController.value.isPlaying;
 
+  bool _isVideoPlayerControllerInitialized = false;
+  bool get isVideoPlayerControllerInitialized => _isVideoPlayerControllerInitialized;
+
   Future _initialize() async {
     await videoPlayerController.setLooping(looping);
 
     if ((autoInitialize || autoPlay) &&
         !videoPlayerController.value.initialized) {
       await videoPlayerController.initialize();
+      _isVideoPlayerControllerInitialized = true;
+      notifyListeners();
     }
 
     if (autoPlay) {
